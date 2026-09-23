@@ -1,0 +1,354 @@
+<style>
+  .p4-dash {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page-plane:     #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --baseline:       #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+    --series-1:       #2a78d6; /* blue */
+    --series-2:       #eb6834; /* orange */
+    --series-3:       #1baf7a; /* aqua */
+    --series-4:       #eda100; /* yellow */
+    --series-muted:   #c3c2b7;
+    --seq-250:        #86b6ef;
+    --seq-350:        #5598e7;
+    --seq-450:        #2a78d6;
+    --seq-550:        #1c5cab;
+    --status-good:    #0ca30c;
+    --status-warning: #fab219;
+    --status-serious: #ec835a;
+    --status-critical:#d03b3b;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page-plane);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 24px 20px 60px;
+    box-sizing: border-box;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .p4-dash {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --page-plane:     #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --gridline:       #2c2c2a;
+      --baseline:       #383835;
+      --border:         rgba(255,255,255,0.10);
+      --series-1:       #3987e5;
+      --series-2:       #d95926;
+      --series-3:       #199e70;
+      --series-4:       #c98500;
+      --series-muted:   #383835;
+      --seq-250:        #86b6ef;
+      --seq-350:        #5598e7;
+      --seq-450:        #3987e5;
+      --seq-550:        #1c5cab;
+      --status-good:    #0ca30c;
+      --status-warning: #fab219;
+      --status-serious: #ec835a;
+      --status-critical:#e66767;
+    }
+  }
+  :root[data-theme="dark"] .p4-dash {
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --page-plane:     #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --gridline:       #2c2c2a;
+    --baseline:       #383835;
+    --border:         rgba(255,255,255,0.10);
+    --series-1:       #3987e5;
+    --series-2:       #d95926;
+    --series-3:       #199e70;
+    --series-4:       #c98500;
+    --series-muted:   #383835;
+  }
+
+  .p4-dash * { box-sizing: border-box; }
+  .p4-wrap { max-width: 1080px; margin: 0 auto; }
+
+  .p4-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+  .p4-title { font-size: 22px; font-weight: 700; margin: 0; }
+  .p4-subtitle { color: var(--text-secondary); font-size: 13px; margin: 2px 0 20px; }
+
+  .p4-banner { border-radius: 10px; padding: 12px 16px; font-size: 13.5px; margin-bottom: 20px; border: 1px solid var(--border); line-height: 1.5; }
+  .p4-banner.preview { background: color-mix(in srgb, var(--series-1) 10%, var(--surface-1)); color: var(--text-primary); }
+  .p4-banner.error { background: color-mix(in srgb, var(--status-critical) 12%, var(--surface-1)); color: var(--text-primary); }
+  .p4-banner code { background: var(--border); padding: 1px 5px; border-radius: 4px; }
+
+  .p4-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .p4-tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+  .p4-tile .label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+  .p4-tile .value { font-size: 26px; font-weight: 700; line-height: 1; }
+  .p4-tile .sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+  .p4-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 20px; }
+  .p4-card h2 { font-size: 15px; margin: 0 0 2px; }
+  .p4-card .card-note { font-size: 12.5px; color: var(--text-secondary); margin: 0 0 14px; }
+
+  .p4-bar-row { display: grid; grid-template-columns: 190px 1fr 46px; align-items: center; gap: 10px; margin-bottom: 9px; font-size: 13px; }
+  .p4-bar-row .rowlabel { color: var(--text-secondary); }
+  .p4-bar-track { background: var(--gridline); border-radius: 4px; height: 14px; overflow: hidden; }
+  .p4-bar-fill { height: 100%; border-radius: 4px; min-width: 3px; }
+  .p4-bar-row .rowcount { text-align: right; font-variant-numeric: tabular-nums; color: var(--text-primary); }
+
+  .p4-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 720px) { .p4-two-col { grid-template-columns: 1fr; } }
+
+  .p4-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .p4-table th { text-align: left; color: var(--text-muted); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.02em; padding: 0 8px 8px 0; border-bottom: 1px solid var(--gridline); }
+  .p4-table td { padding: 7px 8px 7px 0; border-bottom: 1px solid var(--gridline); }
+  .p4-table tr:last-child td { border-bottom: none; }
+  .p4-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  .p4-flags { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .p4-flags li { display: flex; gap: 10px; font-size: 13px; line-height: 1.45; }
+  .p4-flags .flagdot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--status-warning); margin-top: 6px; }
+
+  .p4-footer { color: var(--text-muted); font-size: 12px; text-align: center; margin-top: 8px; }
+
+  .p4-placeholder { color: var(--text-muted); font-size: 13px; padding: 10px 0; }
+</style>
+
+<div class="p4-dash">
+  <div class="p4-wrap">
+    <div class="p4-header">
+      <h1 class="p4-title">P4 Sleep Pathways — Referral Pipeline Dashboard</h1>
+    </div>
+    <p class="p4-subtitle" id="p4-updated">Loading live data…</p>
+
+    <div id="p4-banner-slot"></div>
+
+    <div class="p4-stats" id="p4-stats"></div>
+
+    <div class="p4-card">
+      <h2>Referral Pipeline (current snapshot)</h2>
+      <p class="card-note">Stage is inferred from which dates are filled in on each patient — this tracker doesn't have a separate status field.</p>
+      <div id="p4-funnel"></div>
+    </div>
+
+    <div class="p4-two-col">
+      <div class="p4-card">
+        <h2>Referral Sources</h2>
+        <p class="card-note">Who's sending patients in (Referred By).</p>
+        <table class="p4-table" id="p4-sources"></table>
+      </div>
+      <div class="p4-card">
+        <h2>Assigned Provider</h2>
+        <p class="card-note">Which provider the patient was routed to (Referred To) — mostly blank today.</p>
+        <table class="p4-table" id="p4-providers"></table>
+      </div>
+    </div>
+
+    <div class="p4-two-col">
+      <div class="p4-card">
+        <h2>Insurance Mix</h2>
+        <p class="card-note">Payer breakdown across tracked patients.</p>
+        <div id="p4-insurance"></div>
+      </div>
+      <div class="p4-card">
+        <h2>Appliance Type</h2>
+        <p class="card-note">Recorded once a patient reaches delivery.</p>
+        <div id="p4-appliance"></div>
+      </div>
+    </div>
+
+    <div class="p4-card">
+      <h2>Monthly Financials</h2>
+      <p class="card-note" id="p4-financials-note"></p>
+      <div id="p4-financials"></div>
+    </div>
+
+    <div class="p4-card">
+      <h2>Data Quality Flags</h2>
+      <p class="card-note">Things worth fixing in the source sheet so the numbers above stay trustworthy.</p>
+      <ul class="p4-flags" id="p4-flags"></ul>
+    </div>
+
+    <p class="p4-footer" id="p4-footer"></p>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ---- CONFIG -------------------------------------------------------
+  // Once the Apps Script bridge is deployed (see SETUP_INSTRUCTIONS.md),
+  // paste its /exec URL here. Leaving the placeholder shows a labeled
+  // preview built from a one-time snapshot of the tracker instead — it
+  // will NOT silently pass off as live data.
+  var APPS_SCRIPT_URL = 'PASTE_APPS_SCRIPT_WEB_APP_URL_HERE';
+
+  var EMBEDDED_PREVIEW_DATA = {"asOf": "2026-09-22T00:00:00.000Z", "totalPatients": 100, "funnel": [{"key": "no_dates_recorded", "label": "No Dates Recorded", "count": 41}, {"key": "referred_awaiting_consult", "label": "Referred \u2014 Awaiting Consult", "count": 41}, {"key": "consulted_awaiting_scan", "label": "Consulted \u2014 Awaiting Scan", "count": 0}, {"key": "scanned_awaiting_delivery", "label": "Scanned \u2014 Awaiting Delivery", "count": 15}, {"key": "delivered", "label": "Delivered", "count": 3}], "referralSources": [{"name": "dental office", "count": 37}, {"name": "Dibra", "count": 23}, {"name": "Shah", "count": 17}, {"name": "Aduddell Dentistry", "count": 5}, {"name": "William", "count": 5}, {"name": "Truong", "count": 4}, {"name": "Internet", "count": 3}, {"name": "Dental Sleep Leads", "count": 2}, {"name": "Kathryn Murray, PA", "count": 2}, {"name": "Natalia Pak", "count": 1}, {"name": "Sherri Powell KnownWell", "count": 1}], "assignedProviders": [{"name": "Not recorded", "count": 83}, {"name": "Kathryn Murray, PA", "count": 6}, {"name": "Dr. Truong", "count": 4}, {"name": "Dr. William", "count": 2}, {"name": "Dr. Dibra", "count": 2}, {"name": "Kathryn Murray Inspire", "count": 1}, {"name": "Dr. Alfar", "count": 1}, {"name": "Collin County ENT", "count": 1}], "insuranceMix": [{"name": "BCBS", "count": 35}, {"name": "Not recorded", "count": 27}, {"name": "MEDICARE", "count": 16}, {"name": "UHC", "count": 7}, {"name": "none/cash", "count": 6}, {"name": "AETNA", "count": 4}, {"name": "UMR", "count": 2}, {"name": "Cigna", "count": 2}, {"name": "Anthem BCBS", "count": 1}], "applianceMix": [{"name": "Not recorded", "count": 74}, {"name": "DSAD", "count": 25}, {"name": "Avera", "count": 1}], "preAuthNeededCount": 8, "labCost": {"total": 12950.0, "rowsWithCost": 25}, "financials": [{"month": "01-2026", "billed": 0, "payments": 0, "adjustments": 0, "allowed": 0}, {"month": "02-2026", "billed": 0, "payments": 0, "adjustments": 0, "allowed": 0}, {"month": "03-2026", "billed": 0, "payments": 0, "adjustments": 0, "allowed": 0}, {"month": "04-2026", "billed": 0, "payments": 0, "adjustments": 0, "allowed": 0}, {"month": "05-2026", "billed": 0, "payments": 0, "adjustments": 0, "allowed": 0}, {"month": "06-2026", "billed": 0, "payments": 0, "adjustments": 0, "allowed": 0}, {"month": "07-2026", "billed": 0, "payments": 0, "adjustments": 0, "allowed": 0}, {"month": "08-2026", "billed": 0, "payments": 0, "adjustments": 0, "allowed": 0}, {"month": "09-2026", "billed": 0, "payments": 0, "adjustments": 0, "allowed": 0}, {"month": "10-2026", "billed": 0, "payments": 0, "adjustments": 0, "allowed": 0}, {"month": "11-2026", "billed": 0, "payments": 0, "adjustments": 0, "allowed": 0}, {"month": "12-2026", "billed": 0, "payments": 0, "adjustments": 0, "allowed": 0}], "financialsAllZero": true, "dataFlags": ["41 of 100 patients have no dates recorded at all \u2014 there's no way to tell where they stand in the pipeline until at least a DATE REFERRED is entered.", "60 of 100 patients have no cell number on file.", "37 of 100 patients are logged with just \"dental office\" as the referral source \u2014 the specific referring dentist isn't captured for these.", "27 of 100 patients have no insurance recorded.", "74 of 100 patients have no Appliance Type recorded yet (usually filled in around delivery).", "The Monthly Financials tab has no billing entered yet for any month \u2014 billing isn't being tracked live, so it's not shown as a trend below."]};
+
+  var STAGE_COLORS = {
+    no_dates_recorded: 'var(--series-muted)',
+    referred_awaiting_consult: 'var(--seq-250)',
+    consulted_awaiting_scan: 'var(--seq-350)',
+    scanned_awaiting_delivery: 'var(--seq-450)',
+    delivered: 'var(--status-good)'
+  };
+
+  function fmtDate(iso) {
+    try {
+      var d = new Date(iso);
+      return d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+    } catch (e) { return iso; }
+  }
+  function fmtMoney(n) {
+    return '$' + (n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function el(tag, cls, html) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html !== undefined) e.innerHTML = html;
+    return e;
+  }
+  function renderBanner(kind, html) {
+    var slot = document.getElementById('p4-banner-slot');
+    slot.innerHTML = '';
+    if (!kind) return;
+    slot.appendChild(el('div', 'p4-banner ' + kind, html));
+  }
+
+  function renderStats(data) {
+    var stats = document.getElementById('p4-stats');
+    stats.innerHTML = '';
+    var byKey = {};
+    data.funnel.forEach(function (f) { byKey[f.key] = f.count; });
+    var activePipeline = (byKey.referred_awaiting_consult||0) + (byKey.consulted_awaiting_scan||0) + (byKey.scanned_awaiting_delivery||0);
+    var tiles = [
+      { label: 'Total Patients Tracked', value: data.totalPatients, sub: 'in the referral log' },
+      { label: 'Active in Pipeline', value: activePipeline, sub: 'referred through scanned, not yet delivered' },
+      { label: 'Delivered', value: byKey.delivered||0, sub: 'appliance delivered' },
+      { label: 'No Dates Recorded', value: byKey.no_dates_recorded||0, sub: 'status unknown — needs a date entered' }
+    ];
+    tiles.forEach(function (t) {
+      var tile = el('div', 'p4-tile');
+      tile.appendChild(el('div', 'label', t.label));
+      tile.appendChild(el('div', 'value', String(t.value)));
+      tile.appendChild(el('div', 'sub', t.sub));
+      stats.appendChild(tile);
+    });
+  }
+
+  function renderBars(containerId, items, colorFn) {
+    var wrap = document.getElementById(containerId);
+    wrap.innerHTML = '';
+    var max = Math.max.apply(null, items.map(function (i) { return i.count; }).concat([1]));
+    items.forEach(function (item, idx) {
+      var row = el('div', 'p4-bar-row');
+      row.appendChild(el('div', 'rowlabel', item.label !== undefined ? item.label : item.name));
+      var track = el('div', 'p4-bar-track');
+      var fill = el('div', 'p4-bar-fill');
+      var pct = Math.round((item.count / max) * 100);
+      fill.style.width = Math.max(pct, item.count > 0 ? 2 : 0) + '%';
+      fill.style.background = colorFn ? colorFn(item, idx) : 'var(--series-1)';
+      track.appendChild(fill);
+      row.appendChild(track);
+      row.appendChild(el('div', 'rowcount', String(item.count)));
+      wrap.appendChild(row);
+    });
+  }
+
+  function renderFunnel(data) {
+    renderBars('p4-funnel', data.funnel, function (f) { return STAGE_COLORS[f.key] || 'var(--series-1)'; });
+  }
+
+  var PALETTE_CYCLE = ['var(--series-1)', 'var(--series-2)', 'var(--series-3)', 'var(--series-4)', 'var(--series-muted)'];
+  function renderInsurance(data) {
+    var top = data.insuranceMix.slice(0, 6);
+    renderBars('p4-insurance', top, function (item, idx) { return PALETTE_CYCLE[idx % PALETTE_CYCLE.length]; });
+  }
+  function renderAppliance(data) {
+    var top = data.applianceMix.slice(0, 6);
+    renderBars('p4-appliance', top, function (item, idx) { return PALETTE_CYCLE[idx % PALETTE_CYCLE.length]; });
+  }
+
+  function renderTable(tableEl, rows, colLabel) {
+    tableEl.innerHTML = '';
+    tableEl.appendChild(el('thead', '', '<tr><th>' + colLabel + '</th><th style="text-align:right">Count</th></tr>'));
+    var tbody = el('tbody');
+    if (!rows.length) {
+      tbody.appendChild(el('tr', '', '<td colspan="2" style="color:var(--text-muted)">No data recorded yet</td>'));
+    }
+    rows.slice(0, 8).forEach(function (r) {
+      var tr = el('tr');
+      tr.appendChild(el('td', '', r.name));
+      tr.appendChild(el('td', 'num', String(r.count)));
+      tbody.appendChild(tr);
+    });
+    tableEl.appendChild(tbody);
+  }
+
+  function renderFinancials(data) {
+    var note = document.getElementById('p4-financials-note');
+    var wrap = document.getElementById('p4-financials');
+    wrap.innerHTML = '';
+    if (data.financialsAllZero) {
+      note.textContent = 'Not being tracked yet — every month in the Monthly Financials tab is still $0.';
+      wrap.appendChild(el('div', 'p4-placeholder', 'Once billing starts getting logged month to month, this section will show billed vs. paid vs. allowed amounts as a trend.'));
+      return;
+    }
+    note.textContent = 'From the Monthly Financials tab.';
+    var table = el('table', 'p4-table');
+    table.appendChild(el('thead', '', '<tr><th>Month</th><th style="text-align:right">Billed</th><th style="text-align:right">Payments</th><th style="text-align:right">Adjustments</th><th style="text-align:right">Allowed</th></tr>'));
+    var tbody = el('tbody');
+    data.financials.forEach(function (m) {
+      tbody.appendChild(el('tr', '', '<td>' + m.month + '</td><td class="num">' + fmtMoney(m.billed) + '</td><td class="num">' + fmtMoney(m.payments) + '</td><td class="num">' + fmtMoney(m.adjustments) + '</td><td class="num">' + fmtMoney(m.allowed) + '</td>'));
+    });
+    table.appendChild(tbody);
+    wrap.appendChild(table);
+  }
+
+  function renderFlags(data) {
+    var list = document.getElementById('p4-flags');
+    list.innerHTML = '';
+    if (!data.dataFlags || !data.dataFlags.length) {
+      list.appendChild(el('li', '', 'No data quality issues detected.'));
+      return;
+    }
+    data.dataFlags.forEach(function (f) {
+      var li = el('li');
+      li.appendChild(el('span', 'flagdot'));
+      li.appendChild(el('span', '', f));
+      list.appendChild(li);
+    });
+  }
+
+  function render(data) {
+    document.getElementById('p4-updated').textContent = 'Last updated ' + fmtDate(data.asOf);
+    renderStats(data);
+    renderFunnel(data);
+    renderTable(document.getElementById('p4-sources'), data.referralSources, 'Source');
+    renderTable(document.getElementById('p4-providers'), data.assignedProviders, 'Provider');
+    renderInsurance(data);
+    renderAppliance(data);
+    renderFinancials(data);
+    renderFlags(data);
+    document.getElementById('p4-footer').textContent = 'Source: Tracker 2026 Google Sheet, read live via Apps Script.';
+  }
+
+  var isPlaceholder = APPS_SCRIPT_URL.indexOf('PASTE_') === 0;
+
+  if (isPlaceholder) {
+    renderBanner('preview', '<strong>Preview mode.</strong> This is a one-time snapshot of the tracker pulled on Sep 22, 2026 — not live yet. Deploy the Apps Script bridge and paste its URL into <code>APPS_SCRIPT_URL</code> in this file to make it live (see SETUP_INSTRUCTIONS.md).');
+    render(EMBEDDED_PREVIEW_DATA);
+  } else {
+    fetch(APPS_SCRIPT_URL)
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (data) { render(data); })
+      .catch(function (err) {
+        renderBanner('error', '<strong>Could not load live data.</strong> ' + err.message + '. Check that the Apps Script web app is deployed with access set to "Anyone," and that the URL in <code>APPS_SCRIPT_URL</code> is the one ending in <code>/exec</code>.');
+        document.getElementById('p4-updated').textContent = 'Not connected';
+      });
+  }
+})();
+</script>
